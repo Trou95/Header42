@@ -1,6 +1,8 @@
 #include "Utils/Utils.h"
 #include "Utils/FileService/FileService.h"
 
+#include "Entities/Header.h"
+
 using namespace std;
 using std::vector;
 
@@ -163,6 +165,7 @@ int main(int ac, char** av)
     headerReplacer.initFlags();
     headerReplacer.initSourceFiles();
     headerReplacer.initDirectories();
+
 
     return 0;
 }

@@ -24,7 +24,7 @@ time_t FileService::getFileLastModifyTime(const std::string& path)
 
 const std::string FileService::getFileType(const std::string &path)
 {
-    int index = path.find_last_of('.');
+    size_t index = path.find_last_of('.');
     if(index == std::string::npos)
         return path;
     return path.substr(index);
