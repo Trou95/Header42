@@ -16,6 +16,4 @@ using std::unordered_set;
 
 
 vector<string> str_split(const string& str, char c);
-
-
-std::vector<string> getAllFilesInDirectory(const string& path);
+const string time_to_str(time_t time);

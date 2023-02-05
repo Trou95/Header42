@@ -18,3 +18,13 @@ vector<string> str_split(const string& str, char c)
         ret.push_back(str.substr(last_index));
     return ret;
 }
+
+const string time_to_str(time_t time)
+{
+    struct tm *local;
+    char buffer[20] = {0};
+
+    local = localtime(&time);
+    strftime(buffer, sizeof(buffer), "%Y/%m/%d %H:%M:%S", local);
+    return string(buffer);
+}

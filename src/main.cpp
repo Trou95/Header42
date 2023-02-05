@@ -136,5 +136,8 @@ int main(int ac, char** av)
     headerReplacer.initFlags();
     headerReplacer.initSourceFiles();
 
+    auto res = FileService::getFileLastModifyTime("Makefile");
+    cout << time_to_str(res) << endl;
+
     return 0;
 }
