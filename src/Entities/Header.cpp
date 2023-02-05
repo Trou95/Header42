@@ -44,7 +44,7 @@ void Header::createSign()
     _sign = Header::_default_sign;
 
     size_t index = _sign.find(".c");
-    formatLine(index,_username);
+    formatLine(index, _filename);
 
     index = _sign.find("By:");
     std::string user = str_format("%s <%s@student.42.fr>",_username,_username);

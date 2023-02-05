@@ -22,6 +22,12 @@ time_t FileService::getFileLastModifyTime(const std::string& path)
     return std::chrono::system_clock::to_time_t(ret);
 }
 
+const std::string FileService::getFileName(const std::string &path)
+{
+    size_t index = path.find_last_of('/');
+    return index != std::string::npos ? path.substr(index + 1) : path;
+}
+
 const std::string FileService::getFileType(const std::string &path)
 {
     size_t index = path.find_last_of('.');
@@ -67,7 +73,7 @@ std::string FileService::readFile(const std::string &path)
     try {
         file_size = getFileLen(path);
         file.open(path);
-        char* buffer = new char[file_size];
+        char* buffer = new char[file_size + 1];
         std::unique_ptr<char[]> ptr(buffer);
         file.read(buffer,file_size);
         buffer[file_size] = 0;

@@ -12,9 +12,12 @@ class Header {
         typedef typename std::string sign;
 
     public:
+        static size_t _sign_len;
+
         Header(const char* username,const char* filename,const char* create_time,const char* modify_time);
         const sign& getSign() const;
         static bool isSign(const std::string str);
+
 
     private:
         void createSign();
@@ -27,7 +30,6 @@ class Header {
         const char* _create_time;
         const char* _modify_time;
 
-        static size_t _sign_len;
         static const sign _default_sign;
 };
 

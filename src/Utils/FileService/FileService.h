@@ -19,6 +19,7 @@ class FileService {
         static std::string getCurrentPath();
         static time_t getFileCreateTime(const std::string& path);
         static time_t getFileLastModifyTime(const std::string& path);
+        static const std::string getFileName(const std::string& path);
         static const std::string getFileType(const std::string& path);
         static bool isDirectory(const std::string& path);
         static void createDirectory(const std::string& path);
