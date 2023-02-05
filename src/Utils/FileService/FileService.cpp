@@ -54,3 +54,57 @@ std::vector<std::string> FileService::getAllFilesInDirectory(const std::string &
     }
     return files;
 }
+
+std::string FileService::readFile(const std::string &path)
+{
+    std::ifstream file;
+    std::string res;
+    long long file_size;
+
+    file.exceptions(std::ios::badbit | std::ios::failbit);
+
+    try {
+        file_size = getFileLen(path);
+        file.open(path);
+        char* buffer = new char[file_size];
+        std::unique_ptr<char[]> ptr(buffer);
+        file.read(buffer,file_size);
+        buffer[file_size] = 0;
+        res = buffer;
+    }
+    catch(std::ios_base::failure& e) {
+        std::cerr << std::strerror(errno) << " " << path << std::endl;
+    }
+    file.close();
+    return res;
+}
+
+void FileService::writeFile(const std::string &path, const std::string& str)
+{
+    std::ofstream file;
+
+    file.exceptions(std::ios_base::badbit | std::ios::failbit);
+
+    try {
+        file.open(path, std::ios::binary | std::ios::trunc);
+        file.write(str.c_str(),str.length());
+    }
+    catch(std::ios_base::failure& e) {
+        std::cerr << std::strerror(errno) << " " << path << std::endl;
+    }
+    file.close();
+}
+
+long long FileService::getFileLen(const std::string &path)
+{
+    long long res;
+
+    try {
+        std::ifstream file(path, std::ifstream::ate | std::ifstream::binary);
+        res = file.tellg();
+    }
+    catch(std::ios_base::failure& e) {
+        std::cerr << std::strerror(errno) << " " << path << std::endl;
+    }
+    return res;
+}

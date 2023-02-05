@@ -1,8 +1,11 @@
 #pragma once
 
+#include <cstring>
 #include <sys/stat.h>
 
-#include <string>
+#include <iostream>
+#include <fstream>
+#include <memory>
 #include <vector>
 #include <filesystem>
 
@@ -20,6 +23,9 @@ class FileService {
         static bool isDirectory(const std::string& path);
         static void createDirectory(const std::string& path);
         static std::vector<std::string> getAllFilesInDirectory(const std::string& path);
+        static std::string readFile(const std::string& path);
+        static void writeFile(const std::string& path,const std::string& str);
+        static long long getFileLen(const std::string& path);
 
 
 
