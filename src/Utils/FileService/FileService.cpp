@@ -37,6 +37,7 @@ bool FileService::isDirectory(const std::string &path)
 
 void FileService::createDirectory(const std::string& path)
 {
+    std::cout << "Create " << path << std::endl;
     std::filesystem::create_directory(path);
 }
 
@@ -86,7 +87,7 @@ void FileService::writeFile(const std::string &path, const std::string& str)
     file.exceptions(std::ios_base::badbit | std::ios::failbit);
 
     try {
-        file.open(path, std::ios::binary | std::ios::trunc);
+        file.open(path, std::ios::out | std::ios::trunc);
         file.write(str.c_str(),str.length());
     }
     catch(std::ios_base::failure& e) {

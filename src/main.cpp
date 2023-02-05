@@ -56,9 +56,34 @@ class HeaderReplacer
                 if(isValidFileType(file)) {
                     this->sources.insert(file);
                 }
+        }
 
-            for(auto v : sources)
-                cout << v << endl;
+        void initDirectories() {
+            set<string> directories = getDirectoriesFromSources();
+
+            FileService::createDirectory(this->output_path);
+            for(const auto& directory : directories) {
+                size_t index = directory.find('/');
+                if(index == string::npos) {
+                    FileService::createDirectory(this->output_path + directory);
+                    continue;
+                }
+                while((index = directory.find('/',index)) != string::npos)
+                    FileService::createDirectory(this->output_path + directory.substr(0,index++));
+            }
+        }
+
+        set<string> getDirectoriesFromSources() {
+            set<string> ret;
+
+            for(const auto& file : this->sources) {
+                size_t index = file.find_last_of('.');
+                if(index == string::npos)
+                    continue;
+                index = file.find_last_of('/');
+                ret.insert(file.substr(0,index) + "/");
+            }
+            return ret;
         }
 
         bool isFlag(const string& flag) {
@@ -84,6 +109,8 @@ class HeaderReplacer
             if(path.empty())
                 throw std::runtime_error("Output path cannot be empty");
             this->output_path = FileService::getCurrentPath() + ((path[0] != '/') ? "/" + path : path);
+            if(path[path.length() - 1] != '/')
+                this->output_path += '/';
         }
 
         bool isValidFileType(const string& path) {
@@ -135,8 +162,7 @@ int main(int ac, char** av)
 
     headerReplacer.initFlags();
     headerReplacer.initSourceFiles();
-
-    cout << FileService::readFile("Makefile2") << endl;
+    headerReplacer.initDirectories();
 
     return 0;
 }
