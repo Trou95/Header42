@@ -14,7 +14,6 @@ class HeaderReplacer
 {
     public:
         HeaderReplacer(int ac, char** av) : args(av + 1, av + ac) {
-            
             const char* user = getenv("USER");
 
             setUserName(user ? user : "user");

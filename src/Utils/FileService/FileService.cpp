@@ -44,9 +44,8 @@ time_t FileService::getFileCreateTime(const std::string &path)
         if(stat(path.c_str(),&tmp) == 0)
             res = birthtime(tmp);
 
-        std::cout << "adasda" << std::endl;
-
     #endif
+
     return res;
 }
 
