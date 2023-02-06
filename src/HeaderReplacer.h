@@ -3,6 +3,7 @@
 #include "Utils/Utils.h"
 #include "Utils/FileService/FileService.h"
 #include "Entities/Header.h"
+#include "Utils/Logger/LogService.h"
 
 class HeaderReplacer {
 
@@ -17,6 +18,7 @@ class HeaderReplacer {
     private:
         vector<string> args;
         bool is_recursive;
+        LogService logService;
 
         string username;
         string output_path;

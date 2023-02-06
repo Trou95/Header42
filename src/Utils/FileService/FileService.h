@@ -19,8 +19,6 @@
         #include <io.h>
         #include <fileapi.h>
         #include <timezoneapi.h>
-        #define WINDOWS_TICK 10000000
-        #define SEC_TO_UNIX_EPOCH 11644473600LL
 #elif defined(HAVE_ST_BIRTHTIME)
         #define birthtime(x) x.st_birthtime
 #else

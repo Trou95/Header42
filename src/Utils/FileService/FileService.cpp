@@ -79,7 +79,6 @@ bool FileService::isDirectory(const std::string &path)
 
 void FileService::createDirectory(const std::string& path)
 {
-    std::cout << "Create " << path << std::endl;
     std::filesystem::create_directory(path);
 }
 

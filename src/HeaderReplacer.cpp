@@ -8,7 +8,8 @@ constexpr stFlag flags[] = {
         {"-u", true},
         {"-f", true},
         {"-r", false},
-        {"-o", true}
+        {"-o", true},
+        {"-l", false},
 };
 
 HeaderReplacer::HeaderReplacer(int ac, char **av) : args(av + 1, av + ac)
@@ -20,6 +21,7 @@ HeaderReplacer::HeaderReplacer(int ac, char **av) : args(av + 1, av + ac)
     setOutputPath(DEFAULT_OUTPUT_PATH);
     this->is_recursive = false;
     args.erase(std::unique(args.begin(),args.end()),args.end());
+    this->logService = std::unique_ptr<ILogger>(new Logger());
 }
 
 void HeaderReplacer::initFlags()
@@ -69,9 +71,12 @@ void HeaderReplacer::initDirectories()
 {
     set<string> directories = getDirectoriesFromSources();
 
+    this->logService.logFormat(MESSAGE_INFO, "Creating Directories...");
+
     FileService::createDirectory(this->output_path);
     for(const auto& directory : directories) {
         size_t index = directory.find('/');
+        this->logService.logFormat(MESSAGE_NONE,100, "- Creating: %s", directory.c_str());
         if(index == string::npos) {
             FileService::createDirectory(this->output_path + directory);
             continue;
@@ -79,12 +84,15 @@ void HeaderReplacer::initDirectories()
         while((index = directory.find('/',index)) != string::npos)
             FileService::createDirectory(this->output_path + directory.substr(0,index++));
     }
+    this->logService.log("---------------------------------");
 }
 
 void HeaderReplacer::Run()
 {
+    this->logService.logFormat(MESSAGE_INFO, 2000, "Starting.. %d files found",sources.size());
     for(auto file : sources)
     {
+        this->logService.logFormat(MESSAGE_NONE, 100, "- Reading File: %s", file.c_str());
         string file_info = FileService::readFile(file);
         Header header = createHeader(file);
         string res;
@@ -92,8 +100,10 @@ void HeaderReplacer::Run()
         res = header.getSign() + "\n\n";
         res += Header::isSign(file_info) ? file_info.substr(Header::_sign_len + 1) : file_info;
 
+        this->logService.logFormat(MESSAGE_NONE, 100, "- Writing File: %s",file.c_str());
         FileService::writeFile(this->output_path + file,res);
     }
+    this->logService.logFormat(MESSAGE_INFO, "Finished files located at: %s",this->output_path.c_str());
 }
 
 set<string> HeaderReplacer::getDirectoriesFromSources()
@@ -144,6 +154,8 @@ void HeaderReplacer::setFlag(vector<string>::iterator& it)
         this->is_recursive = true;
     else if(*it == "-o")
         setOutputPath(*(++it));
+    else if(*it == "-l")
+        this->logService.disable();
 }
 
 void HeaderReplacer::setUserName(const string& username)
