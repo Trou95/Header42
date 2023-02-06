@@ -1,6 +1,21 @@
-NAME = HeaderReplace
-SRC = src/*.cpp src/Utils/FileService/*.cpp src/Entities/*.cpp src/Utils/*.cpp
-FLAGS = -Wall -Wextra -Werror
+NAME = HeaderReplacer
+CC = c++
+SRC = src/main.cpp src/HeaderReplacer.cpp src/Utils/FileService/FileService.cpp src/Entities/Header.cpp src/Utils/Utils.cpp
+FLAGS = -Wall -Wextra -Werror -std=c++17
 
-all:
-	c++ $(SRC) $(FLAGS) -std=c++17
+OBJS    = $(SRCS:.cpp=.o)
+
+all: $(NAME)
+
+$(NAME): $(OBJS)
+	@$(CC) -o $(NAME) $(SRC) $(FLAGS)
+
+clean:
+	rm -rf $(OBJS) $(NAME)
+
+fclean: clean
+	rm -rf $(NAME)
+
+re: clean $(NAME)
+
+.PHONY: clean fclean re
