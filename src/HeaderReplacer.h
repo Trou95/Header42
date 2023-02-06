@@ -29,11 +29,11 @@ class HeaderReplacer {
         set<string> getDirectoriesFromSources();
 
         Header createHeader(const string& filepath);
-        int isFlag(const string& flag);
+        inline int isFlag(const string& flag) const;
         void setFlag(vector<string>::iterator& it);
         void setUserName(const string& username);
         void setOutputPath(const string& path);
-        bool isValidFileType(const string& path);
+        inline bool isValidFileType(const string& path) const;
         void setFileTypes(const string& file_types);
         void addFileType(const string& file_type);
 

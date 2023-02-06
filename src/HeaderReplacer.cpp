@@ -136,7 +136,7 @@ Header HeaderReplacer::createHeader(const string& filepath)
     return {this->username.c_str(),file_name.c_str(),create_time.c_str(),modify_time.c_str()};
 }
 
-int HeaderReplacer::isFlag(const string& flag)
+int HeaderReplacer::isFlag(const string& flag) const
 {
     for(long unsigned int i = 0; i < (sizeof(flags) / sizeof(*flags)); i ++)
         if(flags[i].name == flag)
@@ -172,7 +172,7 @@ void HeaderReplacer::setOutputPath(const string& path)
         this->output_path += '/';
 }
 
-bool HeaderReplacer::isValidFileType(const string& path)
+bool HeaderReplacer::isValidFileType(const string& path) const
 {
     const string file_type = FileService::getFileType(path);
     return this->file_types.count(file_type);
