@@ -14,7 +14,10 @@ class HeaderReplacer
 {
     public:
         HeaderReplacer(int ac, char** av) : args(av + 1, av + ac) {
-            setUserName(getenv("USER"));
+            
+            const char* user = getenv("USER");
+
+            setUserName(user ? user : "user");
             setFileTypes(DEFAULT_FILE_TYPE);
             setOutputPath(DEFAULT_OUTPUT_PATH);
             this->is_recursive = false;
@@ -189,10 +192,13 @@ int main(int ac, char** av)
 {
     HeaderReplacer headerReplacer(ac,av);
 
-    headerReplacer.initFlags();
-    headerReplacer.initSourceFiles();
-    headerReplacer.initDirectories();
-    headerReplacer.Run();
+    //headerReplacer.initFlags();
+    //headerReplacer.initSourceFiles();
+    //headerReplacer.initDirectories();
+    //headerReplacer.Run();
+
+    cout << time_to_str(FileService::getFileCreateTime("Makefile")) << endl;
+    cout << time_to_str(FileService::getFileLastModifyTime("Makefile")) << endl;
 
 
     return 0;

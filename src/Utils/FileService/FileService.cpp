@@ -7,11 +7,46 @@ std::string FileService::getCurrentPath()
 
 time_t FileService::getFileCreateTime(const std::string &path)
 {
-    struct stat tmp;
     time_t res;
 
-    if(stat(path.c_str(),&tmp) == 0)
-        res = tmp.st_ctime;
+    #ifdef statx
+
+        #define  _POSIX_C_SOURCE 200809L
+        #include <dirent.h>
+        int dirfd(DIR *dirp);
+
+        DIR* dir = opendir(path.c_str());
+        if(dir) {
+            int fd = dirfd(dir);
+            struct statx tmp;
+            statx(fd,path.c_str(),0,0,&tmp);
+            res = tmp.stx.btime;
+            closedir(dir);
+        }
+
+    #elif defined(WIN32)
+
+        HANDLE file = (HANDLE)_get_osfhandle(fileno(fopen(path.c_str(), "r")));
+        FILETIME create_time;
+
+        GetFileTime(file,&create_time,nullptr,nullptr);
+        res = fileTimeToPosix(create_time);
+
+    #else
+
+        #ifdef HAVE_ST_BIRTHTIME
+            #define birthtime(x) x.st_birthtime
+        #else
+            #define birthtime(x) x.st_ctime
+        #endif
+
+        struct stat tmp;
+        if(stat(path.c_str(),&tmp) == 0)
+            res = birthtime(tmp);
+
+        std::cout << "adasda" << std::endl;
+
+    #endif
     return res;
 }
 
@@ -115,3 +150,25 @@ long long FileService::getFileLen(const std::string &path)
     }
     return res;
 }
+
+#ifdef WIN32
+
+    time_t FileService::fileTimeToPosix(FILETIME ft)
+    {
+        FILETIME localFileTime;
+        SYSTEMTIME sysTime;
+        struct tm tmtime = {0};
+
+        FileTimeToLocalFileTime(&ft,&localFileTime);
+        FileTimeToSystemTime(&localFileTime,&sysTime);
+        tmtime.tm_year = sysTime.wYear - 1900;
+        tmtime.tm_mon = sysTime.wMonth - 1;
+        tmtime.tm_mday = sysTime.wDay;
+        tmtime.tm_hour = sysTime.wHour;
+        tmtime.tm_min = sysTime.wMinute;
+        tmtime.tm_sec = sysTime.wSecond;
+        time_t ret = mktime(&tmtime);
+        return ret;
+    }
+
+#endif

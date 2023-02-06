@@ -9,9 +9,24 @@
 #include <vector>
 #include <filesystem>
 
-#ifdef WIN32
-    #define stat _stat
+
+#ifdef statx
+        #define  _POSIX_C_SOURCE 200809L
+        #include <dirent.h>
+        int dirfd(DIR *dirp);
+#elif defined(WIN32)
+        #include <windows.h>
+        #include <io.h>
+        #include <fileapi.h>
+        #include <timezoneapi.h>
+        #define WINDOWS_TICK 10000000
+        #define SEC_TO_UNIX_EPOCH 11644473600LL
+#elif defined(HAVE_ST_BIRTHTIME)
+        #define birthtime(x) x.st_birthtime
+#else
+         #define birthtime(x) x.st_ctime
 #endif
+
 
 class FileService {
 
@@ -28,6 +43,8 @@ class FileService {
         static void writeFile(const std::string& path,const std::string& str);
         static long long getFileLen(const std::string& path);
 
-
+        #ifdef WIN32
+            static time_t fileTimeToPosix(FILETIME ft);
+        #endif
 
 };
