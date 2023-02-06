@@ -15,6 +15,10 @@ using std::vector;
 using std::set;
 using std::unordered_set;
 
+struct stFlag {
+    const char* name;
+    bool arg;
+};
 
 vector<string> str_split(const string& str, char c);
 string str_format(const char* format, ...);

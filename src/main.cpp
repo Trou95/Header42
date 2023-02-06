@@ -1,19 +1,10 @@
 #include "Utils/Utils.h"
 #include "Utils/FileService/FileService.h"
-
 #include "Entities/Header.h"
-
-using namespace std;
-using std::vector;
 
 constexpr const char* DEFAULT_FILE_TYPE = ".c";
 constexpr const char* DEFAULT_OUTPUT_PATH = "output";
 constexpr char FILE_TYPE_SEPARATOR = ',';
-
-struct stFlag {
-    const char* name;
-    bool arg;
-};
 
 constexpr stFlag flags[] = {
         {"-u", true},
@@ -191,21 +182,6 @@ class HeaderReplacer
         unordered_set<string> sources;
 
 };
-
-
-using namespace std;
-
-int getFlagIndex(const char* str)
-{
-    static std::unordered_set<string> flags = {"-u","-c","-h","-o"};
-
-    auto it = flags.find(string(str));
-    if(it != flags.end()) {
-        return static_cast<int>((std::distance(flags.begin(),flags.end()) - 1) - std::distance(flags.begin(),it));
-    }
-    return -1;
-}
-
 
 int main(int ac, char** av)
 {
