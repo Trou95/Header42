@@ -26,11 +26,13 @@ time_t FileService::getFileCreateTime(const std::string &path)
 
     #elif defined(WIN32)
 
-        HANDLE file = (HANDLE)_get_osfhandle(fileno(fopen(path.c_str(), "r")));
+        auto fId = fopen(path.c_str(),"r");
+        HANDLE file = (HANDLE)_get_osfhandle(fileno(fId));
         FILETIME create_time;
 
         GetFileTime(file,&create_time,nullptr,nullptr);
         res = fileTimeToPosix(create_time);
+        fclose(fId);
 
     #else
 
