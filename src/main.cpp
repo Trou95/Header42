@@ -91,30 +91,33 @@ class HeaderReplacer
         }
 
         void Run() {
-            string res;
-            string file_info;
-            long long time_info;
-            string file_name;
-            string create_time;
-            string modify_time;
-
 
             for(auto file : sources)
             {
-                file_info = FileService::readFile(file);
-                file_name = FileService::getFileName(file);
-                time_info = FileService::getFileCreateTime(file);
-                create_time = time_to_str(time_info);
-                time_info = FileService::getFileLastModifyTime(file);
-                modify_time = time_to_str(time_info);
-                Header header(this->username.c_str(),file_name.c_str(),create_time.c_str(),modify_time.c_str());
+                string file_info = FileService::readFile(file);
+                Header header = createHeader(file);
+                string res;
 
                 res = header.getSign() + "\n\n";
                 res += Header::isSign(file_info) ? file_info.substr(Header::_sign_len + 1) : file_info;
 
                 FileService::writeFile(this->output_path + file,res);
-
             }
+        }
+
+        Header createHeader(const string& filepath) {
+            string res;
+            long long time_info;
+            string file_name;
+            string create_time;
+            string modify_time;
+
+            file_name = FileService::getFileName(filepath);
+            time_info = FileService::getFileCreateTime(filepath);
+            create_time = time_to_str(time_info);
+            time_info = FileService::getFileLastModifyTime(filepath);
+            modify_time = time_to_str(time_info);
+            return {this->username.c_str(),file_name.c_str(),create_time.c_str(),modify_time.c_str()};
         }
 
         bool isFlag(const string& flag) {
