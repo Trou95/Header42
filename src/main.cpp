@@ -10,6 +10,18 @@ constexpr const char* DEFAULT_FILE_TYPE = ".c";
 constexpr const char* DEFAULT_OUTPUT_PATH = "output";
 constexpr char FILE_TYPE_SEPARATOR = ',';
 
+struct stFlag {
+    const char* name;
+    bool arg;
+};
+
+constexpr stFlag flags[] = {
+        {"-u", true},
+        {"-f", true},
+        {"-r", false},
+        {"-o", true}
+};
+
 class HeaderReplacer
 {
     public:
@@ -25,8 +37,10 @@ class HeaderReplacer
 
         void initFlags() {
             for(auto it = args.begin(); it != args.end(); it++) {
-                if(isFlag(*it)) {
-                    if(std::next(it) != args.end())
+                int index;
+
+                if((index = isFlag(*it)) != -1) {
+                    if(!flags[index].arg || std::next(it) != args.end())
                         setFlag(it);
                 }
                 else
@@ -120,8 +134,11 @@ class HeaderReplacer
             return {this->username.c_str(),file_name.c_str(),create_time.c_str(),modify_time.c_str()};
         }
 
-        bool isFlag(const string& flag) {
-            return flag == "-u" || flag == "-f" || flag == "-r" || flag == "-o";
+        int isFlag(const string& flag) {
+            for(long unsigned int i = 0; i < (sizeof(flags) / sizeof(*flags)); i ++)
+                if(flags[i].name == flag)
+                    return static_cast<int>(i);
+            return -1;
         }
 
         void setFlag(vector<string>::iterator& it) {
@@ -194,13 +211,10 @@ int main(int ac, char** av)
 {
     HeaderReplacer headerReplacer(ac,av);
 
-    //headerReplacer.initFlags();
-    //headerReplacer.initSourceFiles();
-    //headerReplacer.initDirectories();
-    //headerReplacer.Run();
-
-    cout << time_to_str(FileService::getFileCreateTime("Makefile")) << endl;
-    cout << time_to_str(FileService::getFileLastModifyTime("Makefile")) << endl;
+    headerReplacer.initFlags();
+    headerReplacer.initSourceFiles();
+    headerReplacer.initDirectories();
+    headerReplacer.Run();
 
 
     return 0;
