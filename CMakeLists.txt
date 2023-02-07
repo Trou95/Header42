@@ -11,4 +11,4 @@ add_executable(FileHeader
         src/Utils/FileService/FileService.h
         src/Utils/Utils.cpp
         src/Utils/Utils.h
-        src/main.cpp src/HeaderReplacer.cpp)
+        src/main.cpp src/HeaderReplacer.cpp src/Utils/Logger/Logger.cpp src/Utils/Logger/LogService.cpp src/Entities/Header.cpp)
