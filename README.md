@@ -1,6 +1,6 @@
 <h1 align="center">Header42</h1>
 
-<p align="center">A simple script for ADD,UPDATE or DELETE your headers to files just with one click(or typing command). Works cross-platform for Linux,MacOS or Windows.*</p>
+<p align="center">A simple script for ADD,UPDATE or DELETE your headers to files just with one click(or typing command). Works cross-platform for Linux,MacOS And Windows.*</p>
 
 
 
