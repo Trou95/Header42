@@ -18,6 +18,7 @@ class HeaderReplacer {
     private:
         vector<string> args;
         bool is_recursive;
+        bool header;
         LogService logService;
 
         string username;

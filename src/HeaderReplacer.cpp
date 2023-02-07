@@ -9,6 +9,7 @@ constexpr stFlag flags[] = {
         {"-f", true},
         {"-r", false},
         {"-o", true},
+        {"-h", false},
         {"-l", false},
 };
 
@@ -20,6 +21,7 @@ HeaderReplacer::HeaderReplacer(int ac, char **av) : args(av + 1, av + ac)
     setFileTypes(DEFAULT_FILE_TYPE);
     setOutputPath(DEFAULT_OUTPUT_PATH);
     this->is_recursive = false;
+    this->header = true;
     args.erase(std::unique(args.begin(),args.end()),args.end());
     this->logService = std::unique_ptr<ILogger>(new Logger());
 }
@@ -93,11 +95,13 @@ void HeaderReplacer::Run()
     for(auto file : sources)
     {
         this->logService.logFormat(MESSAGE_NONE, 100, "- Reading File: %s", file.c_str());
-        string file_info = FileService::readFile(file);
-        Header header = createHeader(file);
         string res;
+        string file_info = FileService::readFile(file);
 
-        res = header.getSign() + "\n\n";
+        if(this->header) {
+            Header header = createHeader(file);
+            res = header.getSign() + "\n\n";
+        }
         res += Header::isSign(file_info) ? file_info.substr(Header::_sign_len + 1) : file_info;
 
         this->logService.logFormat(MESSAGE_NONE, 100, "- Writing File: %s",file.c_str());
@@ -154,6 +158,8 @@ void HeaderReplacer::setFlag(vector<string>::iterator& it)
         this->is_recursive = true;
     else if(*it == "-o")
         setOutputPath(*(++it));
+    else if(*it == "-h")
+        this->header = false;
     else if(*it == "-l")
         this->logService.disable();
 }
