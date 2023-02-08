@@ -116,9 +116,11 @@ set<string> HeaderReplacer::getDirectoriesFromSources()
 
     for(const auto& file : this->sources) {
         size_t index = file.find_last_of('.');
-        if(index == string::npos)
+        if(index == file.npos)
             continue;
         index = file.find_last_of('/');
+        if(index == string::npos)
+            continue;
         ret.insert(file.substr(0,index) + "/");
     }
     return ret;
