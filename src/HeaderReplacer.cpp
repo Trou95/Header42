@@ -80,11 +80,11 @@ void HeaderReplacer::initDirectories()
         size_t index = directory.find('/');
         this->logService.logFormat(MESSAGE_NONE,100, "- Creating: %s", directory.c_str());
         if(index == string::npos) {
-            FileService::createDirectory(this->output_path + directory);
+            FileService::createDirectory(this->output_path + getPath(directory));
             continue;
         }
         while((index = directory.find('/',index)) != string::npos)
-            FileService::createDirectory(this->output_path + directory.substr(0,index++));
+            FileService::createDirectory(this->output_path + getPath(directory.substr(0,index++)));
     }
     this->logService.log("---------------------------------");
 }
@@ -112,7 +112,7 @@ void HeaderReplacer::Run()
 
 
         this->logService.logFormat(MESSAGE_NONE, 100, "- Writing File: %s",file.c_str());
-        FileService::writeFile(this->output_path + file,res);
+        FileService::writeFile(this->output_path + getPath(file),res);
     }
     this->logService.logFormat(MESSAGE_INFO, "Finished files located at: %s",this->output_path.c_str());
 }
@@ -205,4 +205,12 @@ void HeaderReplacer::setFileTypes(const string& file_types)
 void HeaderReplacer::addFileType(const string& file_type)
 {
     this->file_types.insert(file_type);
+}
+
+string HeaderReplacer::getPath(string path)
+{
+
+    while(path.find("../") == 0)
+        path.erase(0,3);
+    return path;
 }

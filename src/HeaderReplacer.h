@@ -37,6 +37,7 @@ class HeaderReplacer {
         inline bool isValidFileType(const string& path) const;
         void setFileTypes(const string& file_types);
         void addFileType(const string& file_type);
+        string getPath(string path);
 
 };
 
