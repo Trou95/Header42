@@ -16,7 +16,7 @@ class Header {
 
         Header(const char* username,const char* filename,const char* create_time,const char* modify_time);
         const sign& getSign() const;
-        static bool isSign(const std::string str);
+        static bool isSign(const std::string& str);
 
 
     private:

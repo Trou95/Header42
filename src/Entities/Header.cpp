@@ -27,8 +27,9 @@ const Header::sign& Header::getSign() const
     return this->_sign;
 }
 
-bool Header::isSign(const std::string str)
+bool Header::isSign(const std::string& str)
 {
+
     if(str[0] != '/' || str.length() < Header::_sign_len)
         return false;
 
@@ -36,7 +37,7 @@ bool Header::isSign(const std::string str)
     for(int i = 0; str[i] && Header::_default_sign[i]; i++)
         if(Header::_default_sign[i] == str[i])
             count++;
-    return Header::_sign_len - count < 310;
+    return Header::_sign_len - count < 350;
 }
 
 void Header::createSign()

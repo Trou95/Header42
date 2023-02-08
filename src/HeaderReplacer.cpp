@@ -100,9 +100,16 @@ void HeaderReplacer::Run()
 
         if(this->header) {
             Header header = createHeader(file);
-            res = header.getSign() + "\n\n";
+            res = header.getSign();
         }
-        res += Header::isSign(file_info) ? file_info.substr(Header::_sign_len + 1) : file_info;
+        if(Header::isSign(file_info))
+        {
+            size_t line_end = Header::_sign_len - 5;
+            res += file_info.substr(file_info.find('/',line_end) + 1);
+        }
+        else
+            res += file_info;
+
 
         this->logService.logFormat(MESSAGE_NONE, 100, "- Writing File: %s",file.c_str());
         FileService::writeFile(this->output_path + file,res);
