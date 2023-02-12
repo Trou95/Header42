@@ -110,7 +110,7 @@ std::string FileService::readFile(const std::string &path)
         file.open(path, std::ios::in | std::ios::binary);
         char* buffer = new char[file_size + 1];
         memset(buffer, 0, file_size);
-        //std::unique_ptr<char[]> ptr(buffer);
+        std::unique_ptr<char[]> ptr(buffer);
         file.read(buffer,file_size);
         buffer[file_size] = 0;
         res = buffer;
