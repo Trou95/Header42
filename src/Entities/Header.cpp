@@ -16,8 +16,8 @@ size_t Header::_sign_len = Header::_default_sign.length();
 
 
 
-Header::Header(const char* username, const char* filename, const char* create_time, const char* modify_time) :
-                _username(username), _filename(filename), _create_time(create_time), _modify_time(modify_time)
+Header::Header(const char* username, const char* filename, const char* create_time, const char* modify_time, const char* campus) :
+                _username(username), _filename(filename), _create_time(create_time), _modify_time(modify_time), _campus(campus)
 {
     createSign();
 }
@@ -48,7 +48,7 @@ void Header::createSign()
     formatLine(index, _filename);
 
     index = _sign.find("By:");
-    std::string user = str_format("%s <%s@student.42.fr>",_username,_username);
+    std::string user = str_format(string("%s <%s@student.42." + string(_campus) + ">").c_str(),_username,_username);
     formatLine(index + 4, user);
 
     index = _sign.find("Created:");
@@ -58,6 +58,9 @@ void Header::createSign()
     index = _sign.find("Updated:");
     std::string modify_time = str_format("%s by %s",_modify_time,_username);
     formatLine(index + 9, modify_time);
+
+    index = _sign.find("fr");
+    formatLine(index,_campus);
 }
 
 void Header::formatLine(int start_index, const std::string& str)

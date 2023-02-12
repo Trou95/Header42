@@ -2,6 +2,7 @@
 
 constexpr const char* DEFAULT_FILE_TYPE = ".c";
 constexpr const char* DEFAULT_OUTPUT_PATH = "output";
+constexpr const char* DEFAULT_CAMPUS = "fr";
 constexpr char FILE_TYPE_SEPARATOR = ',';
 
 constexpr stFlag flags[] = {
@@ -11,6 +12,7 @@ constexpr stFlag flags[] = {
         {"-o", true},
         {"-h", false},
         {"-l", false},
+        {"-c",true},
 };
 
 HeaderReplacer::HeaderReplacer(int ac, char **av) : args(av + 1, av + ac)
@@ -20,6 +22,7 @@ HeaderReplacer::HeaderReplacer(int ac, char **av) : args(av + 1, av + ac)
     setUserName(user ? user : "user");
     setFileTypes(DEFAULT_FILE_TYPE);
     setOutputPath(DEFAULT_OUTPUT_PATH);
+    setCampus(DEFAULT_CAMPUS);
     this->is_recursive = false;
     this->header = true;
     args.erase(std::unique(args.begin(),args.end()),args.end());
@@ -146,7 +149,7 @@ Header HeaderReplacer::createHeader(const string& filepath)
     create_time = time_to_str(time_info);
     time_info = FileService::getFileLastModifyTime(filepath);
     modify_time = time_to_str(time_info);
-    return {this->username.c_str(),file_name.c_str(),create_time.c_str(),modify_time.c_str()};
+    return {this->username.c_str(),file_name.c_str(),create_time.c_str(),modify_time.c_str(),this->campus.c_str()};
 }
 
 int HeaderReplacer::isFlag(const string& flag) const
@@ -171,6 +174,8 @@ void HeaderReplacer::setFlag(vector<string>::iterator& it)
         this->header = false;
     else if(*it == "-l")
         this->logService.disable();
+    else if(*it == "-c")
+        setCampus(*(++it));
 }
 
 void HeaderReplacer::setUserName(const string& username)
@@ -185,6 +190,11 @@ void HeaderReplacer::setOutputPath(const string& path)
     this->output_path = FileService::getCurrentPath() + ((path[0] != '/') ? "/" + path : path);
     if(path[path.length() - 1] != '/')
         this->output_path += '/';
+}
+
+void HeaderReplacer::setCampus(const string &campus)
+{
+    this->campus = campus;
 }
 
 bool HeaderReplacer::isValidFileType(const string& path) const

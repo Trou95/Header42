@@ -23,6 +23,7 @@ class HeaderReplacer {
 
         string username;
         string output_path;
+        string campus;
         unordered_set<string> file_types;
         unordered_set<string> sources;
 
@@ -34,6 +35,7 @@ class HeaderReplacer {
         void setFlag(vector<string>::iterator& it);
         void setUserName(const string& username);
         void setOutputPath(const string& path);
+        void setCampus(const string& campus);
         inline bool isValidFileType(const string& path) const;
         void setFileTypes(const string& file_types);
         void addFileType(const string& file_type);
