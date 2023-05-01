@@ -87,15 +87,6 @@ void HeaderReplacer::initDirectories()
     for(const auto& file : whitelist)
         directories.insert(file);
 
-    
-    std::cout << "Directories -------- " << std::endl;
-
-    for(auto file : directories)
-        std::cout << file << std::endl;
-    
-    std::cout << "--------" << std::endl;
-
-
     this->logService.logFormat(MESSAGE_INFO, "Creating Directories...");
 
     FileService::createDirectory(this->output_path);
