@@ -67,8 +67,14 @@ const std::string FileService::getFileName(const std::string &path)
 const std::string FileService::getFileType(const std::string &path)
 {
     size_t index = path.find_last_of('.');
-    if(index == std::string::npos)
-        return path;
+    if(index == std::string::npos) {
+        index = path.find_last_of('/');
+        if(index == std::string::npos)
+            return path;
+        else
+            return path.substr(index + 1);
+    
+    }
     return path.substr(index);
 }
 

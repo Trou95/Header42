@@ -24,11 +24,15 @@ class HeaderReplacer {
         string username;
         string output_path;
         string campus;
-        unordered_set<string> file_types;
+        unordered_set<string> source_types;
         unordered_set<string> sources;
+        unordered_set<string> whitelist_types;
+        unordered_set<string> whitelist;
 
 
         set<string> getDirectoriesFromSources();
+
+        void copyWhitelist();
 
         Header createHeader(const string& filepath);
         inline int isFlag(const string& flag) const;
@@ -37,8 +41,10 @@ class HeaderReplacer {
         void setOutputPath(const string& path);
         void setCampus(const string& campus);
         inline bool isValidFileType(const string& path) const;
-        void setFileTypes(const string& file_types);
-        void addFileType(const string& file_type);
+        void setSourceFileTypes(const string& file_types);
+        void addSourceFileType(const string& file_type);
+        void setWhiteListTypes(const string& file_types);
+        void addWhiteListType(const string& file_type);
         string getPath(string path);
 
 };

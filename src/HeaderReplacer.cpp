@@ -3,6 +3,7 @@
 constexpr const char* DEFAULT_FILE_TYPE = ".c";
 constexpr const char* DEFAULT_OUTPUT_PATH = "output";
 constexpr const char* DEFAULT_CAMPUS = "fr";
+constexpr const char* DEFAULT_WHITELIST = "Makefile";
 constexpr char FILE_TYPE_SEPARATOR = ',';
 
 constexpr stFlag flags[] = {
@@ -13,6 +14,7 @@ constexpr stFlag flags[] = {
         {"-h", false},
         {"-l", false},
         {"-c",true},
+        {"-w",true},
 };
 
 HeaderReplacer::HeaderReplacer(int ac, char **av) : args(av + 1, av + ac)
@@ -20,7 +22,8 @@ HeaderReplacer::HeaderReplacer(int ac, char **av) : args(av + 1, av + ac)
     const char* user = getenv("USER");
 
     setUserName(user ? user : "user");
-    setFileTypes(DEFAULT_FILE_TYPE);
+    setSourceFileTypes(DEFAULT_FILE_TYPE);
+    setWhiteListTypes(DEFAULT_WHITELIST);
     setOutputPath(DEFAULT_OUTPUT_PATH);
     setCampus(DEFAULT_CAMPUS);
     this->is_recursive = false;
@@ -66,15 +69,32 @@ void HeaderReplacer::initSourceFiles()
     }
 
     this->sources.clear();
-    for(const auto& file : tmp_files)
-        if(isValidFileType(file)) {
-            this->sources.insert(file);
+    for(const auto& file : tmp_files) {
+         auto tmp = getPath(file);
+         if(isValidFileType(tmp)) {
+            if(source_types.count(FileService::getFileType(tmp)))
+                this->sources.insert(file);
+            else
+                whitelist.insert(file);
         }
+    }
 }
 
 void HeaderReplacer::initDirectories()
 {
     set<string> directories = getDirectoriesFromSources();
+
+    for(const auto& file : whitelist)
+        directories.insert(file);
+
+    
+    std::cout << "Directories -------- " << std::endl;
+
+    for(auto file : directories)
+        std::cout << file << std::endl;
+    
+    std::cout << "--------" << std::endl;
+
 
     this->logService.logFormat(MESSAGE_INFO, "Creating Directories...");
 
@@ -95,6 +115,8 @@ void HeaderReplacer::initDirectories()
 void HeaderReplacer::Run()
 {
     this->logService.logFormat(MESSAGE_INFO, 2000, "Starting.. %d files found",sources.size());
+
+    copyWhitelist();
     for(auto file : sources)
     {
         this->logService.logFormat(MESSAGE_NONE, 100, "- Reading File: %s", file.c_str());
@@ -111,7 +133,7 @@ void HeaderReplacer::Run()
             res += file_info.substr(file_info.find('/',line_end) + 1);
         }
         else
-            res += file_info;
+            res += "\n" + file_info;
 
 
         this->logService.logFormat(MESSAGE_NONE, 100, "- Writing File: %s",file.c_str());
@@ -152,6 +174,15 @@ Header HeaderReplacer::createHeader(const string& filepath)
     return {this->username.c_str(),file_name.c_str(),create_time.c_str(),modify_time.c_str(),this->campus.c_str()};
 }
 
+void HeaderReplacer::copyWhitelist()
+{
+    for(auto file : whitelist)
+    {
+        string file_info = FileService::readFile(file);
+        FileService::writeFile(this->output_path + getPath(file),file_info);
+    }
+}
+
 int HeaderReplacer::isFlag(const string& flag) const
 {
     for(long unsigned int i = 0; i < (sizeof(flags) / sizeof(*flags)); i ++)
@@ -165,7 +196,7 @@ void HeaderReplacer::setFlag(vector<string>::iterator& it)
     if(*it == "-u")
         setUserName(*(++it));
     else if(*it == "-f")
-        setFileTypes(*(++it));
+        setSourceFileTypes(*(++it));
     else if(*it == "-r")
         this->is_recursive = true;
     else if(*it == "-o")
@@ -176,6 +207,8 @@ void HeaderReplacer::setFlag(vector<string>::iterator& it)
         this->logService.disable();
     else if(*it == "-c")
         setCampus(*(++it));
+    else if(*it == "-w")
+        addWhiteListType(*(++it));
 }
 
 void HeaderReplacer::setUserName(const string& username)
@@ -200,21 +233,35 @@ void HeaderReplacer::setCampus(const string &campus)
 bool HeaderReplacer::isValidFileType(const string& path) const
 {
     const string file_type = FileService::getFileType(path);
-    return this->file_types.count(file_type);
+    return this->source_types.count(file_type) || this->whitelist_types.count(file_type);
 }
 
-void HeaderReplacer::setFileTypes(const string& file_types)
+void HeaderReplacer::setSourceFileTypes(const string& file_types)
 {
     vector<string> res = str_split(file_types,FILE_TYPE_SEPARATOR);
-    this->file_types.clear();
+    this->source_types.clear();
 
     for(const auto& file_type : res)
-        this->file_types.insert(file_type);
+        this->source_types.insert(file_type);
 }
 
-void HeaderReplacer::addFileType(const string& file_type)
+void HeaderReplacer::addSourceFileType(const string& file_type)
 {
-    this->file_types.insert(file_type);
+    this->source_types.insert(file_type);
+}
+
+void HeaderReplacer::setWhiteListTypes(const string& file_types)
+{
+    vector<string> res = str_split(file_types,FILE_TYPE_SEPARATOR);
+    this->whitelist_types.clear();
+
+    for(const auto& file_type : res)
+        this->whitelist_types.insert(file_type);
+}
+
+void HeaderReplacer::addWhiteListType(const string& file_type)
+{
+    this->whitelist_types.insert(file_type);
 }
 
 string HeaderReplacer::getPath(string path)
